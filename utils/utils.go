@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	// 数据库链接
+	// 数据库链接,AppConfig是从app.conf配置文件中提取信息
 	user := beego.AppConfig.String("user")
 	pwd := beego.AppConfig.String("pwd")
 	host := beego.AppConfig.String("host")
@@ -26,7 +26,8 @@ func init() {
 	if err != nil {
 		fmt.Println("err:", err)
 	} else {
-		orm.RegisterModel(new(Users))
+		orm.RegisterModel(new(Users))   // 创建用户数据表
+		orm.RegisterModel(new(Article)) // 创建blok内容数据表
 		orm.RunSyncdb("default", false, true)
 		fmt.Println("创建成功")
 	}

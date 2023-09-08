@@ -17,4 +17,6 @@ func init() {
 	beego.Router("/login", &controllers.Login{})
 	// 退出
 	beego.Router("/exit", &controllers.Exit{})
+	// 写博客
+	beego.Router("/article/add", &controllers.ArticleAdd{})
 }

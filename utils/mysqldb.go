@@ -16,3 +16,14 @@ type DataMat struct {
 	Code    int
 	Message string
 }
+
+// 文章表
+type Article struct {
+	Id         int
+	Title      string
+	Author     string
+	Tage       string
+	Short      string
+	Content    string `orm:"type(text)"` // longtext
+	Createtime time.Time
+}

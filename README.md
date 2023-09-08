@@ -37,6 +37,7 @@
 7. 编写controller 里article_add.go 实现博客内容的编写，以及article_models里的InsertContent实现内容的插入
 8. 编写 models里的 article_models.go 实现SelectPage（分页查询）、SelectPageAll(查询博客总数)、以及SelectTag（查询tag信息）
 9. 编写models里的home_models.go 实现博客的显示和翻页及tage的显示
+10. 编写controller 里的update.go和delete.go实现对blok的修改和删除，编写models里的article_models 里的UpdateContent（更新），DeleteContent(删除)操作
 
 ## 重点
 
@@ -245,4 +246,76 @@
 	
 	```
 	
-9. 
+9. golang实现markdown语法解析
+	
+	前端实现,在show_article.html页面上导入样式包：
+	
+	```html
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	    ...
+	    <link href="../static/css/lib/highlight.css" rel="stylesheet">
+	</head>
+	```
+	后端实现
+	
+	```golang
+	go get github.com/russross/blackfriday
+	go get github.com/PuerkitoBio/goquery
+	go get github.com/sourcegraph/syntaxhighlight
+	
+	func SwitchMarkdownToHtml(content string) template.HTML {
+		markdown := blackfriday.MarkdownCommon([]byte(content))
+	
+		//获取到html文档
+		doc, _ := goquery.NewDocumentFromReader(bytes.NewReader(markdown))
+		/**
+		对document进程查询，选择器和css的语法一样
+		第一个参数：i是查询到的第几个元素
+		第二个参数：selection就是查询到的元素
+		 */
+		doc.Find("code").Each(func(i int, selection *goquery.Selection) {
+			light, _ := syntaxhighlight.AsHTML([]byte(selection.Text()))
+			selection.SetHtml(string(light))
+			fmt.Println(selection.Html())
+			fmt.Println("light:", string(light))
+			fmt.Println("\n\n\n")
+		})
+		htmlString, _ := doc.Html()
+		return template.HTML(htmlString)
+	}
+	
+	```
+	
+10. 注意，更新和删除数据库时一定要指定对应id 否则会是灾难性后果！！！
+
+	```mysql
+	// 更新博客内容
+	func UpdateContent(id int, title, author, tags, short, content string) error {
+		_, err := Om.Raw("update Article set title=?,author=?,tage=?,short=?,content=?,createtime=? where id = ?", title, author, tags, short, content, time.Now(), id).Exec()
+		if err != nil {
+			// fmt.Println(err)
+			return err
+		}
+		return nil
+	}
+	
+	// 删除指定id博客信息
+	func DeleteContent(id int) (bool, error) {
+		_, err := Om.Raw("delete from Article where id = ?", id).Exec()
+		if err != nil {
+			// fmt.Println(err)
+			return false, err
+		}
+		return true, nil
+	}
+	
+	
+	```
+
+
+	
+	
+	
+	

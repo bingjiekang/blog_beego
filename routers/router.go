@@ -20,5 +20,9 @@ func init() {
 	// 写博客
 	beego.Router("/article/add", &controllers.ArticleAdd{})
 	// 显示文章详情
-	// beego.Router("/article/:id", &controllers.{})
+	beego.Router("/article/:id", &controllers.ArticleShow{})
+	// 修改文章
+	beego.Router("/article/update", &controllers.Update{})
+	// 删除文章
+	beego.Router("/article/delete", &controllers.DeleteBlog{})
 }

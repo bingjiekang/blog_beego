@@ -17,6 +17,26 @@ func InsertContent(title, author, tags, short, content string) error {
 	return nil
 }
 
+// 更新博客内容
+func UpdateContent(id int, title, author, tags, short, content string) error {
+	_, err := Om.Raw("update Article set title=?,author=?,tage=?,short=?,content=?,createtime=? where id = ?", title, author, tags, short, content, time.Now(), id).Exec()
+	if err != nil {
+		// fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+// 删除指定id博客信息
+func DeleteContent(id int) (bool, error) {
+	_, err := Om.Raw("delete from Article where id = ?", id).Exec()
+	if err != nil {
+		// fmt.Println(err)
+		return false, err
+	}
+	return true, nil
+}
+
 // 分页查询,查询指定页数据,page为第几页,num为查询多少条
 func SelectPage(page int, num int) ([]utils.Article, error) {
 	if page < 1 {
@@ -58,4 +78,14 @@ func SelectTag(sql string) ([]utils.Article, error) {
 		return PageData, errors.New("根据tage查询数据不存在")
 	}
 	return PageData, nil
+}
+
+// 查询指定id的博客信息
+func SelectIdBlog(id int) (utils.Article, error) {
+	err := Om.Raw("select * from Article where id = ?", id).QueryRow(&Article)
+	if err != nil {
+		fmt.Println("查询指定id出错", err)
+		return utils.Article{}, err
+	}
+	return Article, nil
 }

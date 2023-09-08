@@ -3,6 +3,8 @@ module blog_beego
 go 1.20
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.1 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/astaxie/beego v1.12.3 // indirect
 	// github.com/beego/beego v1.12.12 // indirect
 	github.com/beego/beego/v2 v2.1.1 // indirect
@@ -17,7 +19,10 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect
+	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
+	github.com/sourcegraph/annotate v0.0.0-20160123013949-f4cad6c6324d // indirect
+	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e // indirect
 	golang.org/x/crypto v0.10.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.9.0 // indirect

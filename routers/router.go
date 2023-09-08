@@ -19,4 +19,6 @@ func init() {
 	beego.Router("/exit", &controllers.Exit{})
 	// 写博客
 	beego.Router("/article/add", &controllers.ArticleAdd{})
+	// 显示文章详情
+	// beego.Router("/article/:id", &controllers.{})
 }

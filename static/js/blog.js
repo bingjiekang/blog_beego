@@ -188,7 +188,7 @@ $(document).ready(function () {
             }
         },
         submitHandler: function (form) {
-            alert("hello")
+            // alert("hello")
             var urlStr = "/article/add";
             //判断文章id确定提交的表单的服务器地址
             //若id大于零，说明是修改文章
@@ -203,13 +203,13 @@ $(document).ready(function () {
                 type: "post",
                 dataType: "json",
                 success: function (data) {
-                    alert(":data:" + data.message);
+                    // alert(":data:" + data.message);成功不提醒
                     setTimeout(function () {
                         window.location.href = "/"
                     }, 1000)
                 },
                 error: function (data, status) {
-                    alert("err:" + data.message + ":" + status)
+                    alert("err:" + data.message + ":" + status)// 失败提醒
                 }
             });
         }

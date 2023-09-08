@@ -34,7 +34,9 @@
 4. 链接数据库，并建立数据表，在utils里的utils.go中连接数据库，建立数据表。
 5. 编写controller 里的register.go和login.go，以及对数据库的相关操作，在models里的users_models.go编写。
 6. 编写controller 里 base.go和exit.go和home.go用来记录session和检测是否登录。
-7. 编写controller 里article_add.go 实现博客内容的编写和访问
+7. 编写controller 里article_add.go 实现博客内容的编写，以及article_models里的InsertContent实现内容的插入
+8. 编写 models里的 article_models.go 实现SelectPage（分页查询）、SelectPageAll(查询博客总数)、以及SelectTag（查询tag信息）
+9. 编写models里的home_models.go 实现博客的显示和翻页及tage的显示
 
 ## 重点
 
@@ -132,4 +134,115 @@
 	}
 	```
 	
-8. 
+8. 翻页 数据库指定范围查询
+
+	```mysql
+	// 分页查询,查询指定页数据,page为第几页,num为查询多少条
+	func SelectPage(page int, num int) ([]utils.Article, error) {
+		if page < 1 {
+			return []utils.Article{}, errors.New("查询页数必须大于1")
+		}
+		start := (page - 1) * num
+		_, err := Om.Raw("select * from Article limit ?,?", start, num).QueryRows(&PageData)
+		if err != nil {
+			fmt.Println("分页查询失败", err)
+			return []utils.Article{}, err
+		} else if len(PageData) == 0 {
+			fmt.Println("查询数据不存在")
+			return PageData, errors.New("查询页数超范围,或不存在,请检查后再次查询")
+		}
+		return PageData, nil
+	
+	}
+	
+	// 查询博客数据总条数,用于确定分页的范围
+	func SelectPageAll() int {
+		cout, err := Om.QueryTable(Article).Count()
+		// tm := Om.Raw("select cout(*) from Article")
+		if err != nil {
+			fmt.Println("查询总数据出错", err)
+			return 0
+		}
+		return int(cout)
+	}
+	```
+	
+	内容显示及翻页的代码实现
+
+	```golang
+	// 显示查询内容
+	func MakeHomeBlocks(page []utils.Article, isLogin bool) template.HTML {
+		// 返回的界面内容
+		htmlHome := ""
+		homepage := HomeBlockParam{}
+		for _, val := range page {
+			// 将数据库model转换为首页模板所需要的model
+			homepage.Id = val.Id
+			homepage.Title = val.Title
+			homepage.Tags = createTagsLinks(val.Tage)
+			homepage.Short = val.Short
+			homepage.Content = val.Content
+			homepage.Author = val.Author
+			homepage.CreateTime = val.Createtime.Format("2006-01-02 15:04:05")
+			homepage.Link = "/article/" + strconv.Itoa(val.Id)
+			homepage.UpdateLink = "/article/update?id=" + strconv.Itoa(val.Id)
+			homepage.DeleteLink = "/article/delete?id=" + strconv.Itoa(val.Id)
+			homepage.IsLogin = isLogin
+	
+			//处理变量
+			//ParseFile解析该文件，用于插入变量
+			t, _ := template.ParseFiles("views/block/home_block.html")
+			buffer := bytes.Buffer{}
+			//就是将html文件里面 空白框 替换为待显示的数据
+			t.Execute(&buffer, homepage)
+			htmlHome += buffer.String()
+		}
+		// 返回整个界面
+		return template.HTML(htmlHome)
+	}
+	
+	// 将tags字符串转化成首页模板所需要的数据结构
+	func createTagsLinks(tags string) []TagLink {
+		var tagLink []TagLink
+		tagsPamar := strings.Split(tags, "&")
+		for _, tag := range tagsPamar {
+			tagLink = append(tagLink, TagLink{tag, "/?tag=" + tag})
+		}
+		return tagLink
+	}
+	
+	// -----------翻页-----------
+	// page是当前的页数
+	func ConfigHomeFooterPageCode(page int) HomeFooterPageCode {
+		pageCode := HomeFooterPageCode{}
+		//查询出总的条数
+		num := SelectPageAll()
+		//从配置文件中读取每页显示的条数
+		pageRow, _ := beego.AppConfig.Int("pagenum")
+		//计算出总页数
+		allPageNum := (num-1)/pageRow + 1
+	
+		// 当前页和可以显示的页数
+		pageCode.ShowPage = fmt.Sprintf("%d/%d", page, allPageNum)
+	
+		//当前页数小于等于1，那么上一页的按钮不能点击
+		if page <= 1 {
+			pageCode.HasPre = false
+		} else {
+			pageCode.HasPre = true
+		}
+	
+		//当前页数大于等于总页数，那么下一页的按钮不能点击
+		if page >= allPageNum {
+			pageCode.HasNext = false
+		} else {
+			pageCode.HasNext = true
+		}
+		pageCode.PreLink = "/?page=" + strconv.Itoa(page-1)
+		pageCode.NextLink = "/?page=" + strconv.Itoa(page+1)
+		return pageCode
+	}
+	
+	```
+	
+9. 

@@ -9,20 +9,21 @@
 <body>
 
 {{template "block/nav.html" .}}
-
+<img src="/static/img/me.JPG">
 <div id="aboutme">
+    
     <div>
-        <img src="http://7xtcwd.com1.z0.glb.clouddn.com/wechat_avator.png">
+        <!-- <img src="/static/img/me.JPG"> -->
 
         <div id="myt">
             <p class="myp">
-                <a href="http://{{.wechat}}">{{.wechat}}</a>
+                <a href="{{.Github}}">Github:{{.Github}}</a>
             </p>
             <p class="myp">
-                <a href="http://{{.qq}}">{{.qq}}</a>
+                <a href="{{.Email}}">Email:{{.Email}}</a>
             </p>
             <p class="myp">
-                <a href="http://{{.tel}}">{{.tel}}</a>
+                <a href="{{.Blok}}">Blok:{{.Blok}}</a>
             </p>
         </div>
     </div>

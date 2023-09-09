@@ -24,7 +24,12 @@
 	- index.tpl #默认视图文件
 
 ## 使用方法
-
+1. go git xxxx
+2. 创建一个mysql数据库，并在conf里的app.conf中修改数据库相关信息
+3. xxxx执行
+4. 访问：8080即可
+5. 配置nginx，配置域名
+6. 申请ssh证书
 
 ## 开发步骤
 
@@ -38,6 +43,8 @@
 8. 编写 models里的 article_models.go 实现SelectPage（分页查询）、SelectPageAll(查询博客总数)、以及SelectTag（查询tag信息）
 9. 编写models里的home_models.go 实现博客的显示和翻页及tage的显示
 10. 编写controller 里的update.go和delete.go实现对blok的修改和删除，编写models里的article_models 里的UpdateContent（更新），DeleteContent(删除)操作
+11. 编写controller 里的tag.go 实现tag标签的访问，models里的article_models.go 里的SelectTagCout 实现名字和数量的查询
+12. 编写controller 里的aboutme.go和album.go 分别实现关于自己，和上传相册，在models里的album_models.go 里编写InsertAlbum(插入数据库照片）SelectAlbum(查询照片)，注意在utils文件夹下注册一个album数据表来存储照片信息
 
 ## 重点
 
@@ -311,6 +318,82 @@
 		return true, nil
 	}
 	
+	
+	```
+	
+11. 实现文件的上传和访问(保存到数据库，拷贝到本地)
+	
+	```
+	// 显示相册
+	func (this *Album) Get() {
+		albums, err := models.SelectAlbum()
+		if err != nil {
+			fmt.Println("显示照片错误", err)
+		}
+		this.Data["Album"] = albums
+		this.TplName = "album.html"
+		this.Render()
+	}
+	
+	// 上传照片
+	func (this *Album) Post() {
+	
+		fmt.Println("fileupload...")
+		fileData, fileHeader, err := this.GetFile("upload")
+		if err != nil {
+			this.responseErr(err)
+			fmt.Println("获取待上传照片失败", err)
+			return
+		}
+		fmt.Println("name:", fileHeader.Filename, fileHeader.Size)
+		fmt.Println(fileData)
+		now := time.Now()
+		fmt.Println("ext:", filepath.Ext(fileHeader.Filename))
+		fileType := "other"
+		//判断后缀为图片的文件，如果是图片我们才存入到数据库中
+		fileExt := filepath.Ext(fileHeader.Filename)
+		if fileExt == ".jpg" || fileExt == ".png" || fileExt == ".gif" || fileExt == ".jpeg" {
+			fileType = "img"
+		}
+		//文件夹路径
+		fileDir := fmt.Sprintf("static/img/%s/%d/%d/%d", fileType, now.Year(), now.Month(), now.Day())
+		//ModePerm是0777，这样拥有该文件夹路径的执行权限
+		err = os.MkdirAll(fileDir, os.ModePerm)
+		if err != nil {
+			this.responseErr(err)
+			fmt.Println("打开照片文件路径失败", err)
+			return
+		}
+		//文件路径
+		timeStamp := time.Now().UnixNano()
+		fileName := fmt.Sprintf("%d-%s", timeStamp, fileHeader.Filename)
+		filePathStr := filepath.Join(fileDir, fileName)
+		desFile, err := os.Create(filePathStr)
+		if err != nil {
+			this.responseErr(err)
+			fmt.Println("创建照片失败", err)
+			return
+		}
+		//将浏览器客户端上传的文件拷贝到本地路径的文件里面
+		_, err = io.Copy(desFile, fileData)
+		if err != nil {
+			this.responseErr(err)
+			fmt.Println("拷贝照片到本地失败", err)
+			return
+		}
+		if fileType == "img" {
+			// album := models.Album{0, filePathStr, fileName, 0, timeStamp}
+			// 插入照片
+			models.InsertAlbum(filePathStr, fileName, 0)
+		}
+		this.Data["json"] = map[string]interface{}{"code": 1, "message": "上传成功"}
+		this.ServeJSON()
+	}
+	
+	func (this *Album) responseErr(err error) {
+		this.Data["json"] = map[string]interface{}{"code": 0, "message": err}
+		this.ServeJSON()
+	}
 	
 	```
 

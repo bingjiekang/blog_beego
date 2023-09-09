@@ -67,8 +67,8 @@ func SelectPageAll() int {
 }
 
 // 根据tage查询信息
-func SelectTag(sql string) ([]utils.Article, error) {
-	_, err := Om.Raw(sql).QueryRows(&PageData)
+func SelectTag(tag string) ([]utils.Article, error) {
+	_, err := Om.Raw("select * from Article where tage = ?", tag).QueryRows(&PageData)
 
 	if err != nil {
 		fmt.Println("根据tage查询失败", err)
@@ -78,6 +78,20 @@ func SelectTag(sql string) ([]utils.Article, error) {
 		return PageData, errors.New("根据tage查询数据不存在")
 	}
 	return PageData, nil
+}
+
+// 返回tage的名称和对应数量
+func SelectTagCout() (map[string]int, error) {
+	_, err := Om.Raw("select tage,count(*) as cout from Article Group by tage;").QueryRows(&Tags)
+	if err != nil {
+		fmt.Println("查询指定tage出错", err)
+		return map[string]int{}, err
+	}
+	var sult map[string]int = make(map[string]int)
+	for _, v := range Tags {
+		sult[v.Tage] = v.Cout
+	}
+	return sult, nil
 }
 
 // 查询指定id的博客信息

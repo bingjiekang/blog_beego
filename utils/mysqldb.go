@@ -27,3 +27,12 @@ type Article struct {
 	Content    string `orm:"type(text)"` // longtext
 	Createtime time.Time
 }
+
+// 照片存储表
+type Album struct {
+	Id         int
+	Filepath   string
+	Filename   string
+	Status     int
+	Createtime time.Time
+}

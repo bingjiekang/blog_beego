@@ -96,11 +96,13 @@ func ConfigHomeFooterPageCode(page int) HomeFooterPageCode {
 通过%去匹配任意多个字符，至少是一个
 */
 func QueryArticlesWithTag(tag string) ([]utils.Article, error) {
-	sql := " where tags like '%&" + tag + "&%'"
-	sql += " or tags like '%&" + tag + "'"
-	sql += " or tags like '" + tag + "&%'"
-	sql += " or tags like '" + tag + "'"
-	fmt.Println(sql)
+	// sql := " where tags like '%&" + tag + "&%'"
+	// sql += " or tags like '%&" + tag + "'"
+	// sql += " or tags like '" + tag + "&%'"
+	// sql += " or tags like '" + tag + "'"
+
+	// sql := "select * from Article where tage = " + tag
+	// fmt.Println(sql)
 	//sql: like
 
 	// tags: http&web&socket&互联网&计算机
@@ -114,5 +116,5 @@ func QueryArticlesWithTag(tag string) ([]utils.Article, error) {
 	// %&web
 	// web&%
 	// web
-	return SelectTag(sql)
+	return SelectTag(tag)
 }

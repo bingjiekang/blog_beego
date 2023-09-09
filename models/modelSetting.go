@@ -41,6 +41,12 @@ type HomeFooterPageCode struct {
 	NextLink string
 }
 
+// 查询tage的数量和类型
+type TageCount struct {
+	Tage string
+	Cout int
+}
+
 // 用om来操作数据库,不切换数据库,只使用一次
 var Om orm.Ormer = orm.NewOrm()
 
@@ -52,3 +58,9 @@ var Article utils.Article = utils.Article{}
 
 // 分页查询的blok内容列表
 var PageData []utils.Article = []utils.Article{}
+
+// 查询tage的数量类型
+var Tags []TageCount = []TageCount{}
+
+// 查询照片的类型
+var Albums []utils.Album = []utils.Album{}

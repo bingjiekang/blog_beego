@@ -33,6 +33,7 @@ func init() {
 	} else {
 		orm.RegisterModel(new(Users))   // 创建用户数据表
 		orm.RegisterModel(new(Article)) // 创建blok内容数据表
+		orm.RegisterModel(new(Album))   // 创建照片表
 		orm.RunSyncdb("default", false, true)
 		fmt.Println("创建成功")
 	}

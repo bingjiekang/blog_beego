@@ -25,4 +25,11 @@ func init() {
 	beego.Router("/article/update", &controllers.Update{})
 	// 删除文章
 	beego.Router("/article/delete", &controllers.DeleteBlog{})
+	// 标签查看
+	beego.Router("/tags", &controllers.Tag{})
+	// 关于相册
+	beego.Router("/album", &controllers.Album{})
+	beego.Router("/upload", &controllers.Album{})
+	// 关于自身
+	beego.Router("/aboutme", &controllers.AboutMe{})
 }

@@ -30,7 +30,7 @@
 
 	```mysql
 	create database BlogBeego charset=utf8mb4;
-	<!--查看mysql数据库BlogBeego的创建信息细节-->
+	# 查看mysql数据库BlogBeego的创建信息细节
 	show create database BlogBeego 
 	```
 	
@@ -42,7 +42,69 @@
 4. 打包文件 go build -o BlogBeego main.go
 5. nohup ./BlogBeego >mainlog.log 2>&1 &
 6. 配置nginx，配置域名
-6. 申请ssh证书
+
+	```nginx
+	server {
+	   listen 80;
+	   server_name xxxx(你的域名);
+	   rewrite ^ https://$http_host$request_uri? permanent;
+	
+	}
+	
+	server {
+	    server_name xxxx(你的域名);
+	    location / {
+	      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	      proxy_set_header X-Forwarded-Proto $scheme;
+	      proxy_set_header Host $http_host;
+	      proxy_set_header X-Real-IP $remote_addr;
+	      proxy_set_header Range $http_range;
+	      proxy_set_header If-Range $http_if_range;
+	      proxy_redirect off;
+	      # 监听的本地端口号（你的）
+	      proxy_pass http://127.0.0.1:8082; 
+	    }
+	}
+	```
+
+7. 申请ssh证书
+
+	```
+	# 下载certbot
+	apt install certbot python3-certbot-nginx
+	# 申请证书
+	certbot --nginx -d （网址不带http/https）例如blog.kangxxxxx.cn
+	# 修改对应的配置文件
+	server {
+	   listen 80;
+	   server_name xxxx(你的域名);
+	   rewrite ^ https://$http_host$request_uri? permanent;
+	
+	}
+	
+	server {
+	    server_name xxxx(你的域名);
+	    location / {
+	      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	      proxy_set_header X-Forwarded-Proto $scheme;
+	      proxy_set_header Host $http_host;
+	      proxy_set_header X-Real-IP $remote_addr;
+	      proxy_set_header Range $http_range;
+	      proxy_set_header If-Range $http_if_range;
+	      proxy_redirect off;
+	      # 监听的本地端口号（你的）
+	      proxy_pass http://127.0.0.1:8082; 
+	    }
+	    listen 443 ssl; # managed by Certbot
+	    ssl_certificate /etc/letsencrypt/live/blog.kangbingjie.cn/fullchain.pem; # managed by Certbot
+	    ssl_certificate_key /etc/letsencrypt/live/blog.kangbingjie.cn/privkey.pem; # managed by Certbot
+	    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+	    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+	}
+	
+	```
+
+8. service nginx reload 重启nginx就可以访问到你的域名了
 
 ## 开发步骤
 

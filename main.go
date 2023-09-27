@@ -8,5 +8,5 @@ import (
 )
 
 func main() {
-	beego.Run()
+	beego.Run(":", beego.AppConfig.String("httpport"))
 }

@@ -9,7 +9,7 @@ import (
 
 // 插入博客内容
 func InsertContent(title, author, tags, short, content string) error {
-	_, err := Om.Raw("insert into Article(title,author,tage,short,content,createtime) values(?,?,?,?,?,?)", title, author, tags, short, content, time.Now()).Exec()
+	_, err := Om.Raw("insert into article(title,author,tage,short,content,createtime) values(?,?,?,?,?,?)", title, author, tags, short, content, time.Now()).Exec()
 	if err != nil {
 		// fmt.Println(err)
 		return err
@@ -19,7 +19,7 @@ func InsertContent(title, author, tags, short, content string) error {
 
 // 更新博客内容
 func UpdateContent(id int, title, author, tags, short, content string) error {
-	_, err := Om.Raw("update Article set title=?,author=?,tage=?,short=?,content=?,createtime=? where id = ?", title, author, tags, short, content, time.Now(), id).Exec()
+	_, err := Om.Raw("update article set title=?,author=?,tage=?,short=?,content=?,createtime=? where id = ?", title, author, tags, short, content, time.Now(), id).Exec()
 	if err != nil {
 		// fmt.Println(err)
 		return err
@@ -29,7 +29,7 @@ func UpdateContent(id int, title, author, tags, short, content string) error {
 
 // 删除指定id博客信息
 func DeleteContent(id int) (bool, error) {
-	_, err := Om.Raw("delete from Article where id = ?", id).Exec()
+	_, err := Om.Raw("delete from article where id = ?", id).Exec()
 	if err != nil {
 		// fmt.Println(err)
 		return false, err
@@ -43,7 +43,7 @@ func SelectPage(page int, num int) ([]utils.Article, error) {
 		return []utils.Article{}, errors.New("查询页数必须大于1")
 	}
 	start := (page - 1) * num
-	_, err := Om.Raw("select * from Article limit ?,?", start, num).QueryRows(&PageData)
+	_, err := Om.Raw("select * from article limit ?,?", start, num).QueryRows(&PageData)
 	if err != nil {
 		fmt.Println("分页查询失败", err)
 		return []utils.Article{}, err
@@ -68,7 +68,7 @@ func SelectPageAll() int {
 
 // 根据tage查询信息
 func SelectTag(tag string) ([]utils.Article, error) {
-	_, err := Om.Raw("select * from Article where tage = ?", tag).QueryRows(&PageData)
+	_, err := Om.Raw("select * from article where tage = ?", tag).QueryRows(&PageData)
 
 	if err != nil {
 		fmt.Println("根据tage查询失败", err)
@@ -82,7 +82,7 @@ func SelectTag(tag string) ([]utils.Article, error) {
 
 // 返回tage的名称和对应数量
 func SelectTagCout() (map[string]int, error) {
-	_, err := Om.Raw("select tage,count(*) as cout from Article Group by tage;").QueryRows(&Tags)
+	_, err := Om.Raw("select tage,count(*) as cout from article Group by tage;").QueryRows(&Tags)
 	if err != nil {
 		fmt.Println("查询指定tage出错", err)
 		return map[string]int{}, err
@@ -96,7 +96,7 @@ func SelectTagCout() (map[string]int, error) {
 
 // 查询指定id的博客信息
 func SelectIdBlog(id int) (utils.Article, error) {
-	err := Om.Raw("select * from Article where id = ?", id).QueryRow(&Article)
+	err := Om.Raw("select * from article where id = ?", id).QueryRow(&Article)
 	if err != nil {
 		fmt.Println("查询指定id出错", err)
 		return utils.Article{}, err

@@ -8,7 +8,7 @@ import (
 
 // 插入照片
 func InsertAlbum(filepath, filename string, status int) bool {
-	_, err := Om.Raw("insert into Album(filepath,filename,status,createtime) values(?,?,?,?)", filepath, filename, status, time.Now()).Exec()
+	_, err := Om.Raw("insert into album(filepath,filename,status,createtime) values(?,?,?,?)", filepath, filename, status, time.Now()).Exec()
 	if err != nil {
 		fmt.Println("保存照片到数据库失败", err)
 		return false
@@ -19,7 +19,7 @@ func InsertAlbum(filepath, filename string, status int) bool {
 
 // 查询照片
 func SelectAlbum() ([]utils.Album, error) {
-	_, err := Om.Raw("select * from Album").QueryRows(&Albums)
+	_, err := Om.Raw("select * from album").QueryRows(&Albums)
 	if err != nil {
 		fmt.Println("查询照片失败", err)
 		return []utils.Album{}, err

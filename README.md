@@ -24,11 +24,24 @@
 	- index.tpl #默认视图文件
 
 ## 使用方法
-1. go git xxxx
-2. 创建一个mysql数据库，并在conf里的app.conf中修改数据库相关信息
-3. xxxx执行
-4. 访问：8080即可
-5. 配置nginx，配置域名
+1. git clone https://github.com/bingjiekang/blog_beego.git 
+2. 查看端口是否被其他应用占用 netstat -tunlp|grep xxxx
+3. 创建一个mysql数据库，并在conf里的app.conf中修改数据库相关信息
+
+	```mysql
+	create database BlogBeego charset=utf8mb4;
+	<!--查看mysql数据库BlogBeego的创建信息细节-->
+	show create database BlogBeego 
+	```
+	
+	```conf
+	vim app.conf
+	修改信息
+	```
+
+4. 打包文件 go build -o BlogBeego main.go
+5. nohup ./BlogBeego >mainlog.log 2>&1 &
+6. 配置nginx，配置域名
 6. 申请ssh证书
 
 ## 开发步骤
